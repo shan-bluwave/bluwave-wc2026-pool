@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Predictions - BluWave-ai WC 2026 Pool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fifa: { dark: '#0a1628', blue: '#0066cc', accent: '#00a3ff', light: '#e6f4ff', navy: '#0d2137' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-fifa-dark min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="bg-black/30 backdrop-blur-md border-b border-fifa-blue/30 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <span class="text-2xl">⚽</span>
+                <span class="font-bold text-lg text-fifa-accent">BluWave-ai WC 2026</span>
+            </a>
+            <div class="flex gap-4 text-sm">
+                <a href="index.html" class="hover:text-fifa-accent transition">Home</a>
+                <a href="predictions.html" class="text-fifa-accent font-semibold">Predictions</a>
+                <a href="leaderboard.html" class="hover:text-fifa-accent transition">Leaderboard</a>
+                <a href="rules.html" class="hover:text-fifa-accent transition">Rules</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- User Name Section -->
+        <div id="name-section" class="mb-8">
+            <h1 class="text-3xl font-bold mb-6">Make Your Predictions</h1>
+            <div class="bg-white/5 border border-blue-500/20 rounded-xl p-6">
+                <label class="block text-blue-200 text-sm mb-2">Your Name</label>
+                <div class="flex gap-3">
+                    <input type="text" id="user-name" placeholder="Enter your name..."
+                        class="flex-1 bg-white/10 border border-blue-500/30 rounded-lg px-4 py-3 text-white placeholder-blue-300/50 focus:outline-none focus:border-fifa-accent/50 focus:ring-1 focus:ring-fifa-accent/30">
+                    <button onclick="setUser()" class="bg-fifa-blue hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition">
+                        Continue
+                    </button>
+                </div>
+                <p class="text-blue-400/60 text-xs mt-2">Use the same name every time so your predictions are linked together.</p>
+            </div>
+        </div>
+
+        <!-- Round Selection (hidden until name entered) -->
+        <div id="round-section" class="hidden mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">
+                    Welcome, <span id="display-name" class="text-fifa-accent"></span>!
+                </h2>
+                <button onclick="changeUser()" class="text-sm text-blue-400 hover:text-white transition">Change name</button>
+            </div>
+
+            <!-- Round Tabs -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="selectRound('Round of 32')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Round of 32">
+                    Round of 32
+                </button>
+                <button onclick="selectRound('Round of 16')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Round of 16">
+                    Round of 16
+                </button>
+                <button onclick="selectRound('Quarter-Finals')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Quarter-Finals">
+                    Quarter-Finals
+                </button>
+                <button onclick="selectRound('Semi-Finals')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Semi-Finals">
+                    Semi-Finals
+                </button>
+                <button onclick="selectRound('Final')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Final">
+                    Final
+                </button>
+            </div>
+
+            <!-- Points info -->
+            <div id="points-info" class="text-sm text-blue-300 mb-6 hidden">
+                <span class="text-fifa-accent font-bold" id="points-value"></span> points per correct prediction in this round
+            </div>
+
+            <!-- Matches Container -->
+            <div id="matches-container" class="space-y-3">
+                <!-- Matches loaded dynamically -->
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="hidden text-center py-12">
+                <div class="spinner mx-auto mb-4"></div>
+                <p class="text-blue-300">Loading matches...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <p class="text-blue-300 text-lg">This round is not active yet.</p>
+                <p class="text-blue-400/60 text-sm mt-2">Check back when the round begins!</p>
+            </div>
+
+            <!-- Submit Button -->
+            <div id="submit-section" class="hidden mt-8 text-center">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm text-blue-300">
+                        Picks made: <span id="picks-count" class="text-fifa-accent font-bold">0</span> / <span id="picks-total">0</span>
+                    </span>
+                </div>
+                <button onclick="submitPredictions()" id="submit-btn"
+                    class="bg-gradient-to-r from-fifa-blue to-fifa-accent text-white font-bold px-10 py-4 rounded-xl text-lg hover:scale-105 transition-transform shadow-lg shadow-fifa-accent/20 disabled:opacity-50 disabled:hover:scale-100">
+                    Submit Predictions
+                </button>
+            </div>
+
+            <!-- Already Submitted State -->
+            <div id="already-submitted" class="hidden mt-8 text-center bg-green-500/10 border border-green-500/30 rounded-xl p-6">
+                <p class="text-green-400 font-semibold text-lg">✓ Predictions Submitted!</p>
+                <p class="text-blue-300 text-sm mt-2">You can update your picks until the round deadline.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/flags.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        let currentUser = localStorage.getItem('wc2026_user') || '';
+        let currentRound = '';
+        let predictions = {}; // { matchId: 'teamName' }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                showRoundSection();
+            }
+        });
+
+        function setUser() {
+            const input = document.getElementById('user-name');
+            const name = input.value.trim();
+            if (!name) {
+                showToast('Please enter your name', 'error');
+                return;
+            }
+            currentUser = name;
+            localStorage.setItem('wc2026_user', name);
+            showRoundSection();
+        }
+
+        function changeUser() {
+            currentUser = '';
+            localStorage.removeItem('wc2026_user');
+            document.getElementById('name-section').classList.remove('hidden');
+            document.getElementById('round-section').classList.add('hidden');
+            document.getElementById('user-name').value = '';
+        }
+
+        function showRoundSection() {
+            document.getElementById('name-section').classList.add('hidden');
+            document.getElementById('round-section').classList.remove('hidden');
+            document.getElementById('display-name').textContent = currentUser;
+        }
+
+        async function selectRound(round) {
+            currentRound = round;
+            predictions = {};
+
+            // Update tab styles
+            document.querySelectorAll('.round-tab').forEach(tab => {
+                tab.classList.remove('bg-fifa-accent/20', 'border-fifa-accent', 'text-fifa-accent');
+                if (tab.dataset.round === round) {
+                    tab.classList.add('bg-fifa-accent/20', 'border-fifa-accent', 'text-fifa-accent');
+                }
+            });
+
+            // Show points info
+            document.getElementById('points-info').classList.remove('hidden');
+            document.getElementById('points-value').textContent = CONFIG.POINTS[round];
+
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('matches-container').innerHTML = '';
+            document.getElementById('submit-section').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('already-submitted').classList.add('hidden');
+
+            try {
+                const data = await API.getMatches(round);
+                document.getElementById('loading').classList.add('hidden');
+
+                if (!data.matches || data.matches.length === 0) {
+                    document.getElementById('empty-state').classList.remove('hidden');
+                    return;
+                }
+
+                renderMatches(data.matches);
+
+                // Check if user already submitted
+                const userPreds = await API.getUserPredictions(currentUser, round);
+                if (userPreds && userPreds.predictions) {
+                    predictions = userPreds.predictions;
+                    highlightExistingPicks();
+                    document.getElementById('already-submitted').classList.remove('hidden');
+                }
+
+                document.getElementById('submit-section').classList.remove('hidden');
+                document.getElementById('picks-total').textContent = data.matches.length;
+                updatePicksCount();
+
+            } catch (e) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('hidden');
+                console.error('Error loading matches:', e);
+            }
+        }
+
+        function renderMatches(matches) {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = matches.map((match, index) => `
+                <div class="match-card bg-white/5 border border-blue-500/20 rounded-xl p-4">
+                    <div class="text-xs text-blue-400 mb-2">Match ${index + 1}</div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="pickTeam('${match.id}', '${match.team1}')" 
+                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition"
+                            data-match="${match.id}" data-team="${match.team1}">
+                            ${withFlag(match.team1)}
+                        </button>
+                        <span class="text-blue-500 font-bold text-sm">VS</span>
+                        <button onclick="pickTeam('${match.id}', '${match.team2}')" 
+                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition"
+                            data-match="${match.id}" data-team="${match.team2}">
+                            ${withFlag(match.team2)}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function pickTeam(matchId, team) {
+            predictions[matchId] = team;
+
+            // Update button styles for this match
+            document.querySelectorAll(`[data-match="${matchId}"]`).forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.team === team) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            updatePicksCount();
+        }
+
+        function highlightExistingPicks() {
+            Object.entries(predictions).forEach(([matchId, team]) => {
+                document.querySelectorAll(`[data-match="${matchId}"]`).forEach(btn => {
+                    btn.classList.remove('selected');
+                    if (btn.dataset.team === team) {
+                        btn.classList.add('selected');
+                    }
+                });
+            });
+        }
+
+        function updatePicksCount() {
+            document.getElementById('picks-count').textContent = Object.keys(predictions).length;
+        }
+
+        async function submitPredictions() {
+            const totalMatches = parseInt(document.getElementById('picks-total').textContent);
+            const picksMade = Object.keys(predictions).length;
+
+            if (picksMade < totalMatches) {
+                showToast(`Please pick a winner for all ${totalMatches} matches`, 'error');
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            try {
+                await API.submitPredictions(currentUser, currentRound, predictions);
+                showToast('Predictions submitted successfully! 🎉', 'success');
+                document.getElementById('already-submitted').classList.remove('hidden');
+            } catch (e) {
+                showToast('Error submitting predictions. Please try again.', 'error');
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Predictions';
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            const toast = document.createElement('div');
+            toast.className = `toast ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

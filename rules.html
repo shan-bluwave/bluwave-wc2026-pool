@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules - BluWave-ai WC 2026 Pool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fifa: { dark: '#0a1628', blue: '#0066cc', accent: '#00a3ff', light: '#e6f4ff', navy: '#0d2137' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-fifa-dark min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="bg-black/30 backdrop-blur-md border-b border-fifa-blue/30 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <span class="text-2xl">⚽</span>
+                <span class="font-bold text-lg text-fifa-accent">BluWave-ai WC 2026</span>
+            </a>
+            <div class="flex gap-4 text-sm">
+                <a href="index.html" class="hover:text-fifa-accent transition">Home</a>
+                <a href="predictions.html" class="hover:text-fifa-accent transition">Predictions</a>
+                <a href="leaderboard.html" class="hover:text-fifa-accent transition">Leaderboard</a>
+                <a href="rules.html" class="text-fifa-accent font-semibold">Rules</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Rules & Scoring</h1>
+
+        <!-- How It Works -->
+        <section class="bg-white/5 border border-blue-500/20 rounded-xl p-6 mb-6">
+            <h2 class="text-xl font-bold text-fifa-accent mb-4">How It Works</h2>
+            <ol class="space-y-3 text-blue-200">
+                <li class="flex gap-3">
+                    <span class="bg-fifa-accent text-fifa-dark w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+                    <span>Before each knockout round begins, predict the <strong class="text-white">winner</strong> of each match.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="bg-fifa-accent text-fifa-dark w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+                    <span>You earn points for each correct prediction. Points <strong class="text-white">double</strong> every round.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="bg-fifa-accent text-fifa-dark w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+                    <span>Predictions must be submitted <strong class="text-white">before</strong> the first match of each round kicks off.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="bg-fifa-accent text-fifa-dark w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">4</span>
+                    <span>The player with the most total points at the end of the tournament wins!</span>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Points Table -->
+        <section class="bg-white/5 border border-blue-500/20 rounded-xl p-6 mb-6">
+            <h2 class="text-xl font-bold text-fifa-accent mb-4">Points Per Round</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-blue-500/20 text-blue-300 text-sm">
+                            <th class="py-2 pr-4">Round</th>
+                            <th class="py-2 pr-4 text-center">Matches</th>
+                            <th class="py-2 pr-4 text-center">Points/Correct Pick</th>
+                            <th class="py-2 text-center">Max Points</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-blue-500/10">
+                            <td class="py-3 pr-4 font-medium">Round of 32</td>
+                            <td class="py-3 pr-4 text-center text-blue-300">16</td>
+                            <td class="py-3 pr-4 text-center text-fifa-accent font-bold">2</td>
+                            <td class="py-3 text-center">32</td>
+                        </tr>
+                        <tr class="border-b border-blue-500/10">
+                            <td class="py-3 pr-4 font-medium">Round of 16</td>
+                            <td class="py-3 pr-4 text-center text-blue-300">8</td>
+                            <td class="py-3 pr-4 text-center text-fifa-accent font-bold">4</td>
+                            <td class="py-3 text-center">32</td>
+                        </tr>
+                        <tr class="border-b border-blue-500/10">
+                            <td class="py-3 pr-4 font-medium">Quarter-Finals</td>
+                            <td class="py-3 pr-4 text-center text-blue-300">4</td>
+                            <td class="py-3 pr-4 text-center text-fifa-accent font-bold">8</td>
+                            <td class="py-3 text-center">32</td>
+                        </tr>
+                        <tr class="border-b border-blue-500/10">
+                            <td class="py-3 pr-4 font-medium">Semi-Finals</td>
+                            <td class="py-3 pr-4 text-center text-blue-300">2</td>
+                            <td class="py-3 pr-4 text-center text-fifa-accent font-bold">16</td>
+                            <td class="py-3 text-center">32</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pr-4 font-medium">Final</td>
+                            <td class="py-3 pr-4 text-center text-blue-300">1</td>
+                            <td class="py-3 pr-4 text-center text-fifa-accent font-bold">32</td>
+                            <td class="py-3 text-center">32</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t border-blue-500/30">
+                            <td class="py-3 pr-4 font-bold text-white" colspan="3">Maximum Total</td>
+                            <td class="py-3 text-center font-bold text-fifa-accent text-lg">160</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- Important Rules -->
+        <section class="bg-white/5 border border-blue-500/20 rounded-xl p-6 mb-6">
+            <h2 class="text-xl font-bold text-fifa-accent mb-4">Important Rules</h2>
+            <ul class="space-y-3 text-blue-200">
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Round-by-round predictions:</strong> You only predict the upcoming round. No need to predict the entire bracket in advance.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Deadline:</strong> Predictions lock when the first match of that round kicks off.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Updates allowed:</strong> You can change your predictions any time before the deadline.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Extra time & penalties:</strong> The team that advances counts as the winner (regardless of whether it went to penalties).</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Join anytime:</strong> Missed a round? No problem — you can still participate in later rounds.</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-fifa-accent">•</span>
+                    <span><strong class="text-white">Tiebreaker:</strong> If two players have the same total points, the player who got more predictions correct in later rounds (Final > SF > QF > R16 > R32) ranks higher.</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Tip -->
+        <section class="bg-fifa-accent/10 border border-fifa-accent/30 rounded-xl p-6">
+            <h2 class="text-lg font-bold text-fifa-accent mb-2">💡 Tip</h2>
+            <p class="text-blue-200 text-sm">
+                Each round is worth the same total points (32). This means even if you miss early rounds, a perfect Final prediction (32 pts) is worth as much as getting all 16 matches right in the Round of 32. Stay in the game!
+            </p>
+        </section>
+    </main>
+
+    <footer class="text-center text-blue-400/50 text-sm py-8">
+        BluWave-ai World Cup 2026 Prediction Pool ⚡🏆
+    </footer>
+</body>
+</html>
