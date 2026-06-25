@@ -77,7 +77,10 @@ const FLAG_CODES = {
     'Wales': 'gb-wls',
     'Slovakia': 'sk',
 
-    // Additional common variations
+    // Additional countries
+    'South Africa': 'za',
+
+    // Common variations
     'Korea Republic': 'kr',
     'IR Iran': 'ir',
     'Saudi': 'sa',
