@@ -347,11 +347,10 @@
         }
 
         async function submitPredictions() {
-            const totalMatches = parseInt(document.getElementById('picks-total').textContent);
             const picksMade = Object.keys(predictions).length;
 
-            if (picksMade < totalMatches) {
-                showToast(`Please pick a winner for all ${totalMatches} matches`, 'error');
+            if (picksMade === 0) {
+                showToast('Please pick at least one match', 'error');
                 return;
             }
 
