@@ -78,7 +78,8 @@ function getConfig() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const configSheet = ss.getSheetByName(SHEET_CONFIG);
   const activeRound = configSheet.getRange('B1').getValue();
-  return { activeRound: activeRound };
+  const deadline = configSheet.getRange('B2').getValue();
+  return { activeRound: activeRound, deadline: deadline };
 }
 
 // ============================================================
@@ -110,6 +111,14 @@ function getMatches(round) {
 // ============================================================
 function submitPredictions(userName, round, predictions) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Check deadline
+  const configSheet = ss.getSheetByName(SHEET_CONFIG);
+  const deadline = configSheet.getRange('B2').getValue();
+  if (deadline && new Date() > new Date(deadline)) {
+    return { success: false, message: 'Deadline has passed! Predictions are locked.' };
+  }
+
   const sheet = ss.getSheetByName(SHEET_PREDICTIONS);
   const data = sheet.getDataRange().getValues();
 

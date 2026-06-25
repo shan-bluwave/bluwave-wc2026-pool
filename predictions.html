@@ -37,6 +37,19 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Deadline Banner -->
+        <div id="deadline-banner" class="hidden mb-6 bg-white/5 border border-fifa-accent/30 rounded-xl p-4 text-center">
+            <div class="text-sm text-blue-300 mb-1">Predictions deadline</div>
+            <div id="countdown" class="text-2xl font-bold text-fifa-accent"></div>
+            <div id="deadline-local" class="text-xs text-blue-400 mt-1"></div>
+        </div>
+
+        <!-- Deadline Passed Banner -->
+        <div id="deadline-passed" class="hidden mb-6 bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+            <p class="text-red-400 font-bold text-xl mb-2">Predictions Locked</p>
+            <p class="text-blue-300">The deadline for this round has passed. Check the <a href="leaderboard.html" class="text-fifa-accent underline">Leaderboard</a> for results!</p>
+        </div>
+
         <!-- User Name Section -->
         <div id="name-section" class="mb-8">
             <h1 class="text-3xl font-bold mb-6">Make Your Predictions</h1>
@@ -134,13 +147,74 @@
         let currentUser = localStorage.getItem('wc2026_user') || '';
         let currentRound = '';
         let predictions = {}; // { matchId: 'teamName' }
+        let deadlineDate = null;
+        let countdownInterval = null;
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load deadline from config
+            try {
+                const config = await API.getConfig();
+                if (config.deadline) {
+                    deadlineDate = new Date(config.deadline);
+                    checkDeadline();
+                }
+            } catch (e) {
+                console.error('Error loading config:', e);
+            }
+
             if (currentUser) {
                 showRoundSection();
             }
         });
+
+        function checkDeadline() {
+            if (!deadlineDate) return;
+
+            const now = new Date();
+            if (now > deadlineDate) {
+                // Deadline passed — lock everything
+                document.getElementById('deadline-passed').classList.remove('hidden');
+                document.getElementById('name-section').classList.add('hidden');
+                document.getElementById('round-section').classList.add('hidden');
+                document.getElementById('deadline-banner').classList.add('hidden');
+                return;
+            }
+
+            // Show countdown
+            document.getElementById('deadline-banner').classList.remove('hidden');
+            document.getElementById('deadline-local').textContent =
+                'Deadline: ' + deadlineDate.toLocaleString(undefined, {
+                    weekday: 'short', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+                });
+
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = deadlineDate - now;
+
+            if (diff <= 0) {
+                clearInterval(countdownInterval);
+                // Reload to show locked state
+                location.reload();
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            let parts = [];
+            if (days > 0) parts.push(`${days}d`);
+            parts.push(`${hours}h ${mins}m ${secs}s`);
+
+            document.getElementById('countdown').textContent = parts.join(' ');
+        }
 
         function setUser() {
             const input = document.getElementById('user-name');
@@ -286,9 +360,13 @@
             btn.textContent = 'Submitting...';
 
             try {
-                await API.submitPredictions(currentUser, currentRound, predictions);
-                showToast('Predictions submitted successfully! 🎉', 'success');
-                document.getElementById('already-submitted').classList.remove('hidden');
+                const result = await API.submitPredictions(currentUser, currentRound, predictions);
+                if (result.success === false) {
+                    showToast(result.message || 'Submission rejected.', 'error');
+                } else {
+                    showToast('Predictions submitted successfully! 🎉', 'success');
+                    document.getElementById('already-submitted').classList.remove('hidden');
+                }
             } catch (e) {
                 showToast('Error submitting predictions. Please try again.', 'error');
                 console.error(e);
