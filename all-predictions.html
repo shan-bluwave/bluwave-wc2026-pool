@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Predictions - BluWave-ai WC 2026 Pool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fifa: { dark: '#0a1628', blue: '#0066cc', accent: '#00a3ff', light: '#e6f4ff', navy: '#0d2137' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-fifa-dark min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="bg-black/30 backdrop-blur-md border-b border-fifa-blue/30 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="BW_assets/BluWave-ai_Logo_-_White_Text,_Blue_Background-qde51.webp" alt="BluWave-ai" class="h-8 rounded">
+                <span class="font-bold text-lg text-fifa-accent">WC 2026</span>
+            </a>
+            <div class="flex gap-4 text-sm">
+                <a href="index.html" class="hover:text-fifa-accent transition">Home</a>
+                <a href="predictions.html" class="hover:text-fifa-accent transition">Predictions</a>
+                <a href="leaderboard.html" class="hover:text-fifa-accent transition">Leaderboard</a>
+                <a href="all-predictions.html" class="text-fifa-accent font-semibold">All Picks</a>
+                <a href="rules.html" class="hover:text-fifa-accent transition">Rules</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">All Predictions</h1>
+        <p class="text-blue-300 mb-6">See what everyone picked for each round.</p>
+
+        <!-- Round Tabs -->
+        <div class="flex flex-wrap gap-2 mb-8">
+            <button onclick="loadRound('Round of 32')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Round of 32">
+                Round of 32
+            </button>
+            <button onclick="loadRound('Round of 16')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Round of 16">
+                Round of 16
+            </button>
+            <button onclick="loadRound('Quarter-Finals')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Quarter-Finals">
+                Quarter-Finals
+            </button>
+            <button onclick="loadRound('Semi-Finals')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Semi-Finals">
+                Semi-Finals
+            </button>
+            <button onclick="loadRound('Final')" class="round-tab px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-blue-500/20 hover:border-fifa-accent/50 transition" data-round="Final">
+                Final
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-12">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-blue-300">Loading predictions...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-12">
+            <p class="text-blue-300 text-lg">No predictions yet for this round.</p>
+            <p class="text-blue-400/60 text-sm mt-2">Predictions will appear here once people submit their picks.</p>
+        </div>
+
+        <!-- Select Round State -->
+        <div id="select-state" class="text-center py-12">
+            <p class="text-blue-300 text-lg">Select a round above to view predictions.</p>
+        </div>
+
+        <!-- Table Container -->
+        <div id="table-container" class="hidden overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead id="table-head">
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="text-center text-blue-400/50 text-sm py-8">
+        BluWave-ai World Cup 2026 Prediction Pool ⚡🏆
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/flags.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        async function loadRound(round) {
+            // Update tab styles
+            document.querySelectorAll('.round-tab').forEach(tab => {
+                tab.classList.remove('bg-fifa-accent/20', 'border-fifa-accent', 'text-fifa-accent');
+                if (tab.dataset.round === round) {
+                    tab.classList.add('bg-fifa-accent/20', 'border-fifa-accent', 'text-fifa-accent');
+                }
+            });
+
+            // Show loading
+            document.getElementById('select-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('table-container').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                const data = await API.getAllPredictions(round);
+
+                document.getElementById('loading').classList.add('hidden');
+
+                if (!data.players || data.players.length === 0) {
+                    document.getElementById('empty-state').classList.remove('hidden');
+                    return;
+                }
+
+                renderTable(data.matches, data.players);
+                document.getElementById('table-container').classList.remove('hidden');
+            } catch (e) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('hidden');
+                console.error('Error loading predictions:', e);
+            }
+        }
+
+        function renderTable(matches, players) {
+            // Build header: Player | Match 1 (Team1 vs Team2) | Match 2 ...
+            const thead = document.getElementById('table-head');
+            thead.innerHTML = `
+                <tr class="border-b border-blue-500/20 text-blue-300 text-xs uppercase tracking-wide">
+                    <th class="py-3 px-3 text-left sticky left-0 bg-fifa-dark z-10 min-w-[120px]">Player</th>
+                    ${matches.map((m, i) => `
+                        <th class="py-3 px-2 text-center min-w-[100px]">
+                            <div class="text-blue-400 mb-1">Match ${i + 1}</div>
+                            <div class="text-[10px] text-blue-500 normal-case">${m.team1} vs ${m.team2}</div>
+                        </th>
+                    `).join('')}
+                </tr>
+            `;
+
+            // Build rows
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = players.map((player, idx) => `
+                <tr class="border-b border-blue-500/10 leaderboard-row ${idx % 2 === 0 ? 'bg-white/[0.02]' : ''}">
+                    <td class="py-3 px-3 font-medium text-white sticky left-0 ${idx % 2 === 0 ? 'bg-[#0b1729]' : 'bg-fifa-dark'} z-10">${player.name}</td>
+                    ${matches.map(m => {
+                        const pick = player.picks[m.id] || '-';
+                        const isTeam1 = pick === m.team1;
+                        const isTeam2 = pick === m.team2;
+                        const colorClass = pick === '-' ? 'text-blue-500' : 'text-white';
+                        return `<td class="py-3 px-2 text-center ${colorClass}">${pick !== '-' ? withFlag(pick) : '-'}</td>`;
+                    }).join('')}
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

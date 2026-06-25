@@ -65,5 +65,10 @@ const API = {
     // Get results for a specific round
     async getResults(round) {
         return this._fetch(`${CONFIG.API_URL}?action=getResults&round=${encodeURIComponent(round)}`);
+    },
+
+    // Get all predictions for a round (all players)
+    async getAllPredictions(round) {
+        return this._fetch(`${CONFIG.API_URL}?action=getAllPredictions&round=${encodeURIComponent(round)}`);
     }
 };

@@ -33,6 +33,9 @@ function doGet(e) {
       case 'getResults':
         result = getResults(e.parameter.round);
         break;
+      case 'getAllPredictions':
+        result = getAllPredictions(e.parameter.round);
+        break;
       default:
         result = { error: 'Unknown action' };
     }
@@ -236,4 +239,43 @@ function getLeaderboard() {
   });
 
   return { leaderboard: leaderboard };
+}
+
+// ============================================================
+// ALL PREDICTIONS (view everyone's picks for a round)
+// ============================================================
+function getAllPredictions(round) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const predSheet = ss.getSheetByName(SHEET_PREDICTIONS);
+  const matchSheet = ss.getSheetByName(SHEET_MATCHES);
+
+  // Get matches for this round
+  const matchData = matchSheet.getDataRange().getValues();
+  const matches = [];
+  for (let i = 1; i < matchData.length; i++) {
+    if (matchData[i][1] === round) {
+      matches.push({
+        id: matchData[i][0].toString(),
+        team1: matchData[i][2],
+        team2: matchData[i][3]
+      });
+    }
+  }
+
+  // Get all predictions for this round
+  const predData = predSheet.getDataRange().getValues();
+  const players = [];
+  for (let i = 1; i < predData.length; i++) {
+    if (predData[i][1] === round) {
+      players.push({
+        name: predData[i][0],
+        picks: JSON.parse(predData[i][2])
+      });
+    }
+  }
+
+  // Sort players alphabetically
+  players.sort((a, b) => a.name.localeCompare(b.name));
+
+  return { matches: matches, players: players };
 }
