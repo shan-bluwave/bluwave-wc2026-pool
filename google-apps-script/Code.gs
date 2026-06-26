@@ -89,7 +89,7 @@ function getMatches(round) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(SHEET_MATCHES);
   const data = sheet.getDataRange().getValues();
-  const headers = data[0]; // id, round, team1, team2
+  const headers = data[0]; // id, round, team1, team2, deadline
 
   const matches = [];
   for (let i = 1; i < data.length; i++) {
@@ -98,7 +98,8 @@ function getMatches(round) {
         id: data[i][0].toString(),
         round: data[i][1],
         team1: data[i][2],
-        team2: data[i][3]
+        team2: data[i][3],
+        deadline: data[i][4] ? new Date(data[i][4]).toISOString() : ''
       });
     }
   }
@@ -111,35 +112,63 @@ function getMatches(round) {
 // ============================================================
 function submitPredictions(userName, round, predictions) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const now = new Date();
 
-  // Check deadline
-  const configSheet = ss.getSheetByName(SHEET_CONFIG);
-  const deadline = configSheet.getRange('B2').getValue();
-  if (deadline && new Date() > new Date(deadline)) {
-    return { success: false, message: 'Deadline has passed! Predictions are locked.' };
+  // Check per-match deadlines and filter out expired matches
+  const matchSheet = ss.getSheetByName(SHEET_MATCHES);
+  const matchData = matchSheet.getDataRange().getValues();
+  const expiredMatches = [];
+  for (let i = 1; i < matchData.length; i++) {
+    if (matchData[i][1] === round && matchData[i][4]) {
+      const matchDeadline = new Date(matchData[i][4]);
+      if (now > matchDeadline) {
+        expiredMatches.push(matchData[i][0].toString());
+      }
+    }
+  }
+
+  // Remove expired match predictions
+  const validPredictions = {};
+  let blockedCount = 0;
+  for (const matchId in predictions) {
+    if (expiredMatches.includes(matchId)) {
+      blockedCount++;
+    } else {
+      validPredictions[matchId] = predictions[matchId];
+    }
+  }
+
+  if (Object.keys(validPredictions).length === 0 && blockedCount > 0) {
+    return { success: false, message: 'All selected matches have passed their deadline!' };
   }
 
   const sheet = ss.getSheetByName(SHEET_PREDICTIONS);
   const data = sheet.getDataRange().getValues();
 
-  // Check if user already has predictions for this round - update them
+  // Check if user already has predictions for this round - merge them
   let found = false;
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === userName && data[i][1] === round) {
-      // Update existing row
-      sheet.getRange(i + 1, 3).setValue(JSON.stringify(predictions));
-      sheet.getRange(i + 1, 4).setValue(new Date().toISOString());
+      // Merge: keep existing picks for expired matches, update the rest
+      let existing = {};
+      try { existing = JSON.parse(data[i][2]); } catch(e) {}
+      const merged = Object.assign({}, existing, validPredictions);
+      sheet.getRange(i + 1, 3).setValue(JSON.stringify(merged));
+      sheet.getRange(i + 1, 4).setValue(now.toISOString());
       found = true;
       break;
     }
   }
 
   if (!found) {
-    // Append new row
-    sheet.appendRow([userName, round, JSON.stringify(predictions), new Date().toISOString()]);
+    sheet.appendRow([userName, round, JSON.stringify(validPredictions), now.toISOString()]);
   }
 
-  return { success: true, message: 'Predictions saved!' };
+  let message = 'Predictions saved!';
+  if (blockedCount > 0) {
+    message += ` (${blockedCount} match(es) skipped — deadline passed)`;
+  }
+  return { success: true, message: message };
 }
 
 function getUserPredictions(userName, round) {

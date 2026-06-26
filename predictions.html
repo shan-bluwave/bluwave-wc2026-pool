@@ -152,43 +152,35 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
-            // Load deadline from config
-            try {
-                const config = await API.getConfig();
-                if (config.deadline) {
-                    deadlineDate = new Date(config.deadline);
-                    checkDeadline();
-                }
-            } catch (e) {
-                console.error('Error loading config:', e);
-            }
-
             if (currentUser) {
                 showRoundSection();
             }
         });
 
-        function checkDeadline() {
-            if (!deadlineDate) return;
-
+        function showNextDeadline(matches) {
             const now = new Date();
-            if (now > deadlineDate) {
-                // Deadline passed — lock everything
-                document.getElementById('deadline-passed').classList.remove('hidden');
-                document.getElementById('name-section').classList.add('hidden');
-                document.getElementById('round-section').classList.add('hidden');
+            // Find the next upcoming deadline from loaded matches
+            const upcoming = matches
+                .filter(m => m.deadline && new Date(m.deadline) > now)
+                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+            if (upcoming.length === 0) {
+                // All matches locked
                 document.getElementById('deadline-banner').classList.add('hidden');
+                document.getElementById('deadline-passed').classList.remove('hidden');
                 return;
             }
 
-            // Show countdown
+            deadlineDate = new Date(upcoming[0].deadline);
             document.getElementById('deadline-banner').classList.remove('hidden');
+            document.getElementById('deadline-passed').classList.add('hidden');
             document.getElementById('deadline-local').textContent =
-                'Deadline: ' + deadlineDate.toLocaleString(undefined, {
+                'Next match locks: ' + deadlineDate.toLocaleString(undefined, {
                     weekday: 'short', month: 'short', day: 'numeric',
                     hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
                 });
 
+            if (countdownInterval) clearInterval(countdownInterval);
             updateCountdown();
             countdownInterval = setInterval(updateCountdown, 1000);
         }
@@ -199,7 +191,6 @@
 
             if (diff <= 0) {
                 clearInterval(countdownInterval);
-                // Reload to show locked state
                 location.reload();
                 return;
             }
@@ -275,6 +266,7 @@
                 }
 
                 renderMatches(data.matches);
+                showNextDeadline(data.matches);
 
                 // Check if user already submitted
                 const userPreds = await API.getUserPredictions(currentUser, round);
@@ -297,24 +289,30 @@
 
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
-            container.innerHTML = matches.map((match, index) => `
-                <div class="match-card bg-white/5 border border-blue-500/20 rounded-xl p-4">
-                    <div class="text-xs text-blue-400 mb-2">Match ${index + 1}</div>
+            const now = new Date();
+            container.innerHTML = matches.map((match, index) => {
+                const isLocked = match.deadline && new Date(match.deadline) < now;
+                const lockLabel = isLocked ? '<span class="text-red-400 text-xs ml-2">🔒 Locked</span>' : '';
+                const disabledAttr = isLocked ? 'disabled' : '';
+                const lockedClass = isLocked ? 'opacity-50 cursor-not-allowed' : '';
+                return `
+                <div class="match-card bg-white/5 border ${isLocked ? 'border-red-500/20' : 'border-blue-500/20'} rounded-xl p-4">
+                    <div class="text-xs text-blue-400 mb-2">Match ${index + 1}${lockLabel}</div>
                     <div class="flex items-center gap-3">
                         <button onclick="pickTeam('${match.id}', '${match.team1}')" 
-                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition"
-                            data-match="${match.id}" data-team="${match.team1}">
+                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition ${lockedClass}"
+                            data-match="${match.id}" data-team="${match.team1}" ${disabledAttr}>
                             ${withFlag(match.team1)}
                         </button>
                         <span class="text-blue-500 font-bold text-sm">VS</span>
                         <button onclick="pickTeam('${match.id}', '${match.team2}')" 
-                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition"
-                            data-match="${match.id}" data-team="${match.team2}">
+                            class="team-btn flex-1 py-3 px-4 rounded-lg border border-blue-500/30 text-center font-medium transition ${lockedClass}"
+                            data-match="${match.id}" data-team="${match.team2}" ${disabledAttr}>
                             ${withFlag(match.team2)}
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function pickTeam(matchId, team) {
