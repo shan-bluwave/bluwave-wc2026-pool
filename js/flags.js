@@ -79,6 +79,8 @@ const FLAG_CODES = {
 
     // Additional countries
     'South Africa': 'za',
+    'Bosnia': 'ba',
+    'Bosnia and Herzegovina': 'ba',
 
     // Common variations
     'Korea Republic': 'kr',
