@@ -157,12 +157,12 @@
                 <tr class="border-b border-blue-500/10 leaderboard-row ${idx % 2 === 0 ? 'bg-white/[0.02]' : ''}">
                     <td class="py-3 px-3 font-medium text-white sticky left-0 ${idx % 2 === 0 ? 'bg-[#0b1729]' : 'bg-fifa-dark'} z-10">${player.name}</td>
                     ${matches.map(m => {
-                        const pick = player.picks[m.id];
+                        const pick = player.picks ? player.picks[m.id] : null;
                         if (!pick || pick === '-') {
                             return `<td class="py-3 px-2 text-center text-blue-500">-</td>`;
                         }
-                        if (pick === '__hidden__') {
-                            return `<td class="py-3 px-2 text-center"><span class="cursor-pointer text-lg" title="Revealed after match deadline">🔒</span></td>`;
+                        if (pick.includes('hidden') || !m.locked) {
+                            return `<td class="py-3 px-2 text-center"><span class="cursor-pointer text-xl opacity-70" title="Picks revealed after match deadline">🔒</span></td>`;
                         }
                         return `<td class="py-3 px-2 text-center text-white">${withFlag(pick)}</td>`;
                     }).join('')}
