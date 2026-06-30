@@ -286,17 +286,26 @@ function getAllPredictions(round) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const predSheet = ss.getSheetByName(SHEET_PREDICTIONS);
   const matchSheet = ss.getSheetByName(SHEET_MATCHES);
+  const now = new Date();
 
-  // Get matches for this round
+  // Get matches for this round (include deadline info)
   const matchData = matchSheet.getDataRange().getValues();
   const matches = [];
+  const lockedMatchIds = []; // matches whose deadline has passed
   for (let i = 1; i < matchData.length; i++) {
     if (matchData[i][1] === round) {
+      const matchId = matchData[i][0].toString();
+      const deadline = matchData[i][4] ? new Date(matchData[i][4]) : null;
+      const isLocked = !deadline || now > deadline; // no deadline = always visible
       matches.push({
-        id: matchData[i][0].toString(),
+        id: matchId,
         team1: matchData[i][2],
-        team2: matchData[i][3]
+        team2: matchData[i][3],
+        locked: isLocked
       });
+      if (isLocked) {
+        lockedMatchIds.push(matchId);
+      }
     }
   }
 
@@ -305,9 +314,22 @@ function getAllPredictions(round) {
   const players = [];
   for (let i = 1; i < predData.length; i++) {
     if (predData[i][1] === round) {
+      const allPicks = JSON.parse(predData[i][2]);
+      // Only reveal picks for locked matches; hide the rest
+      const visiblePicks = {};
+      let hasSubmitted = false;
+      for (const matchId in allPicks) {
+        hasSubmitted = true;
+        if (lockedMatchIds.includes(matchId)) {
+          visiblePicks[matchId] = allPicks[matchId];
+        } else {
+          visiblePicks[matchId] = '__hidden__';
+        }
+      }
       players.push({
         name: predData[i][0],
-        picks: JSON.parse(predData[i][2])
+        picks: visiblePicks,
+        submitted: hasSubmitted
       });
     }
   }

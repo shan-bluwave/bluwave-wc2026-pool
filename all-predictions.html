@@ -144,7 +144,7 @@
                     <th class="py-3 px-3 text-left sticky left-0 bg-fifa-dark z-10 min-w-[120px]">Player</th>
                     ${matches.map((m, i) => `
                         <th class="py-3 px-2 text-center min-w-[100px]">
-                            <div class="text-blue-400 mb-1">Match ${i + 1}</div>
+                            <div class="text-blue-400 mb-1">${m.locked ? '' : '🔒 '}Match ${i + 1}</div>
                             <div class="text-[10px] text-blue-500 normal-case">${m.team1} vs ${m.team2}</div>
                         </th>
                     `).join('')}
@@ -157,11 +157,14 @@
                 <tr class="border-b border-blue-500/10 leaderboard-row ${idx % 2 === 0 ? 'bg-white/[0.02]' : ''}">
                     <td class="py-3 px-3 font-medium text-white sticky left-0 ${idx % 2 === 0 ? 'bg-[#0b1729]' : 'bg-fifa-dark'} z-10">${player.name}</td>
                     ${matches.map(m => {
-                        const pick = player.picks[m.id] || '-';
-                        const isTeam1 = pick === m.team1;
-                        const isTeam2 = pick === m.team2;
-                        const colorClass = pick === '-' ? 'text-blue-500' : 'text-white';
-                        return `<td class="py-3 px-2 text-center ${colorClass}">${pick !== '-' ? withFlag(pick) : '-'}</td>`;
+                        const pick = player.picks[m.id];
+                        if (!pick || pick === '-') {
+                            return `<td class="py-3 px-2 text-center text-blue-500">-</td>`;
+                        }
+                        if (pick === '__hidden__') {
+                            return `<td class="py-3 px-2 text-center"><span class="cursor-pointer text-lg" title="Revealed after match deadline">🔒</span></td>`;
+                        }
+                        return `<td class="py-3 px-2 text-center text-white">${withFlag(pick)}</td>`;
                     }).join('')}
                 </tr>
             `).join('');
