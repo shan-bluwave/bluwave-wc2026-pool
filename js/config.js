@@ -12,11 +12,12 @@ const CONFIG = {
         'Round of 16': 4,
         'Quarter-Finals': 8,
         'Semi-Finals': 16,
+        '3rd Place': 12,
         'Final': 32
     },
 
     // Round order
-    ROUNDS: ['Round of 32', 'Round of 16', 'Quarter-Finals', 'Semi-Finals', 'Final'],
+    ROUNDS: ['Round of 32', 'Round of 16', 'Quarter-Finals', 'Semi-Finals', '3rd Place', 'Final'],
 
     // Number of matches per round
     MATCHES_PER_ROUND: {
@@ -24,6 +25,7 @@ const CONFIG = {
         'Round of 16': 8,
         'Quarter-Finals': 4,
         'Semi-Finals': 2,
+        '3rd Place': 1,
         'Final': 1
     }
 };
