@@ -225,12 +225,13 @@ function getLeaderboard() {
     'Round of 16': 4,
     'Quarter-Finals': 8,
     'Semi-Finals': 16,
+    '3rd Place': 12,
     'Final': 32
   };
 
   // Get all predictions
   const predData = predictionsSheet.getDataRange().getValues();
-  const players = {}; // { name: { r32: X, r16: X, qf: X, sf: X, f: X, total: X } }
+  const players = {}; // { name: { r32: X, r16: X, qf: X, sf: X, tp: X, f: X, total: X } }
 
   for (let i = 1; i < predData.length; i++) {
     const name = predData[i][0];
@@ -238,7 +239,7 @@ function getLeaderboard() {
     const preds = JSON.parse(predData[i][2]);
 
     if (!players[name]) {
-      players[name] = { name: name, r32: 0, r16: 0, qf: 0, sf: 0, f: 0, total: 0 };
+      players[name] = { name: name, r32: 0, r16: 0, qf: 0, sf: 0, tp: 0, f: 0, total: 0 };
     }
 
     // Calculate points for this round
@@ -257,6 +258,7 @@ function getLeaderboard() {
       'Round of 16': 'r16',
       'Quarter-Finals': 'qf',
       'Semi-Finals': 'sf',
+      '3rd Place': 'tp',
       'Final': 'f'
     }[round];
 
@@ -270,6 +272,7 @@ function getLeaderboard() {
   const leaderboard = Object.values(players).sort((a, b) => {
     if (b.total !== a.total) return b.total - a.total;
     if (b.f !== a.f) return b.f - a.f;
+    if (b.tp !== a.tp) return b.tp - a.tp;
     if (b.sf !== a.sf) return b.sf - a.sf;
     if (b.qf !== a.qf) return b.qf - a.qf;
     if (b.r16 !== a.r16) return b.r16 - a.r16;
