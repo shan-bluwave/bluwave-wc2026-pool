@@ -198,10 +198,12 @@ function getEntries(view) {
     const names = Object.keys(tuesdayPredictions).filter(n => n in fridayPredictions);
     return names.map(name => {
       const cumPred = tuesdayPredictions[name] + fridayPredictions[name];
+      const tueDev = Math.abs(tuesdayPredictions[name] - tuesdayActual);
+      const friDev = Math.abs(fridayPredictions[name] - fridayActual);
       return {
         name,
         prediction: cumPred,
-        deviation: Math.abs(cumPred - target)
+        deviation: Math.round((tueDev + friDev) * 100) / 100
       };
     });
   }
