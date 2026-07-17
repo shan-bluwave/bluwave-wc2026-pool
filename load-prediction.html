@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Prediction | BluWave-ai WC 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fifa: { dark: '#0a1628', blue: '#0066cc', accent: '#00a3ff', light: '#e6f4ff', navy: '#0d2137' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .podium-load-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .podium-load-2 { background: linear-gradient(135deg, #d1d5db, #9ca3af); }
+        .podium-load-3 { background: linear-gradient(135deg, #d97706, #b45309); }
+        .glow-gold { box-shadow: 0 0 30px rgba(251,191,36,0.3); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-row { animation: slideIn 0.4s ease-out forwards; opacity: 0; }
+        .toggle-active { background-color: #0066cc; color: white; }
+        .toggle-inactive { background-color: rgba(255,255,255,0.05); color: #93c5fd; }
+    </style>
+</head>
+<body class="bg-fifa-dark min-h-screen text-white">
+    <!-- Prize Banner -->
+    <div class="prize-banner border-b border-yellow-400/50 text-center py-3 px-4">
+        <div class="text-yellow-200 font-bold text-sm md:text-base animate-pulse">
+            🏆✨ OVER $1,300 IN PRIZES ACROSS 5 ROUNDS ✨🏆
+        </div>
+        <div class="text-yellow-400/80 text-xs mt-1">Grand Prize: 2 nights hotel + paid day off! <a href="index.html#prizes" class="underline text-yellow-300/80 hover:text-yellow-200 ml-1">See all prizes</a> <span class="text-yellow-500/50 text-[10px] ml-2">*Terms and conditions apply</span></div>
+    </div>
+    <!-- Navigation -->
+    <nav class="bg-black/30 backdrop-blur-md border-b border-fifa-blue/30 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="BW_assets/BluWave-ai_Logo_-_White_Text,_Blue_Background-qde51.webp" alt="BluWave-ai" class="h-8 rounded">
+                <span class="font-bold text-lg text-fifa-accent">WC 2026</span>
+            </a>
+            <div class="flex gap-4 text-sm">
+                <a href="index.html" class="hover:text-fifa-accent transition">Home</a>
+                <a href="predictions.html" class="hover:text-fifa-accent transition">Predictions</a>
+                <a href="all-predictions.html" class="hover:text-fifa-accent transition">All Picks</a>
+                <a href="leaderboard.html" class="hover:text-fifa-accent transition">Leaderboard</a>
+                <a href="load-prediction.html" class="text-fifa-accent font-semibold">Load Prediction</a>
+                <a href="rules.html" class="hover:text-fifa-accent transition">Rules</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto px-4 py-10">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-fifa-accent to-cyan-300 bg-clip-text text-transparent">
+                ⚡ Load Prediction Leaderboard
+            </h1>
+            <p class="text-blue-300/70 mt-2 text-lg">Who predicted the peak load best?</p>
+        </div>
+
+        <!-- Actual Values Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white/5 border border-blue-500/20 rounded-xl p-5 text-center">
+                <p class="text-blue-300 text-sm font-medium uppercase tracking-wide">Tuesday Actual</p>
+                <p class="text-3xl font-bold text-fifa-accent mt-1" id="tue-actual">25.65</p>
+            </div>
+            <div class="bg-white/5 border border-blue-500/20 rounded-xl p-5 text-center">
+                <p class="text-blue-300 text-sm font-medium uppercase tracking-wide">Friday Actual</p>
+                <p class="text-3xl font-bold text-purple-400 mt-1" id="fri-actual">TBD</p>
+            </div>
+            <div class="bg-white/5 border border-blue-500/20 rounded-xl p-5 text-center">
+                <p class="text-blue-300 text-sm font-medium uppercase tracking-wide">Combined Target</p>
+                <p class="text-3xl font-bold text-emerald-400 mt-1" id="combined-target">—</p>
+            </div>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="flex justify-center mb-6 gap-1 bg-white/5 rounded-xl p-1 w-fit mx-auto">
+            <button id="btn-tuesday" onclick="setView('tuesday')" class="px-5 py-2 rounded-lg text-sm font-semibold transition-all toggle-active">Tuesday</button>
+            <button id="btn-friday" onclick="setView('friday')" class="px-5 py-2 rounded-lg text-sm font-semibold transition-all toggle-inactive">Friday</button>
+            <button id="btn-combined" onclick="setView('combined')" class="px-5 py-2 rounded-lg text-sm font-semibold transition-all toggle-inactive">Combined</button>
+        </div>
+
+        <!-- Points Toggle -->
+        <div class="flex justify-center mb-6 gap-1 bg-white/5 rounded-xl p-1 w-fit mx-auto">
+            <button id="btn-position" onclick="setScoring('position')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all toggle-active">Position Points</button>
+            <button id="btn-weighted" onclick="setScoring('weighted')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-all toggle-inactive">Weighted Points</button>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="bg-white/5 border border-blue-500/20 rounded-xl overflow-hidden">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-blue-500/20 text-blue-300 text-sm uppercase tracking-wide">
+                        <th class="py-4 px-5 text-left">Rank</th>
+                        <th class="py-4 px-5 text-left">Name</th>
+                        <th class="py-4 px-5 text-right" id="col-pred">Prediction</th>
+                        <th class="py-4 px-5 text-right" id="col-dev">Deviation</th>
+                        <th class="py-4 px-5 text-right">Points</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formula Note -->
+        <div class="mt-6 bg-white/5 border border-blue-500/20 rounded-xl p-5 text-sm text-blue-300/70">
+            <p class="font-semibold text-blue-200 mb-2">📐 Scoring Formula</p>
+            <ul class="list-disc list-inside space-y-1">
+                <li><strong>Target</strong> = Tuesday Actual + Friday Actual</li>
+                <li><strong>Cumulative Prediction</strong> = Person's Tue Guess + Fri Guess</li>
+                <li><strong>Deviation</strong> = |Cumulative Prediction − Target|</li>
+                <li><strong>Position Points</strong>: 1st = 10 pts, 2nd = 8, 3rd = 6, 4th = 5, 5th = 4, 6th = 3, 7th = 2, rest = 1</li>
+                <li><strong>Weighted Points</strong>: 10 × (1 − deviation / max_deviation) — closer = more points</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-blue-400/50 text-sm py-8">
+        BluWave-ai World Cup 2026 Prediction Pool ⚡🏆
+    </footer>
+
+<script>
+// ===== DATA =====
+const tuesdayActual = 25.65;
+const fridayActual = 22.13;
+
+const tuesdayPredictions = {
+  "Danish": 26.17,
+  "Rob": 26.18,
+  "Dev": 25.75,
+  "Muhammad": 26.75,
+  "Ryan": 25.98,
+  "Aneta": 26.24,
+  "Craig": 25.88,
+  "Carter": 25.65,
+  "Yann": 26.27,
+  "Alex": 25.30,
+  "Hubert": 25.92,
+  "Shan": 25.80,
+  "Kavya": 26.48,
+  "Michael": 25.99,
+  "Colin": 26.87,
+  "James": 26.00,
+  "Saurabh": 24.90
+};
+
+const fridayPredictions = {
+  "Danish": 21.85,
+  "Alex": 20.99,
+  "Dev": 21.22,
+  "Carter": 21.66,
+  "Muhammad": 21.67,
+  "Craig": 21.87,
+  "Rob": 21.85,
+  "Michael": 21.65,
+  "Shan": 21.75,
+  "Aneta": 21.46,
+  "Hubert": 21.56,
+  "James": 21.90
+};
+
+let currentView = 'tuesday';
+let currentScoring = 'position';
+
+const positionPoints = [10, 8, 6, 5, 4, 3, 2];
+
+function getEntries(view) {
+  if (view === 'tuesday') {
+    return Object.entries(tuesdayPredictions).map(([name, pred]) => ({
+      name,
+      prediction: pred,
+      deviation: Math.abs(pred - tuesdayActual)
+    }));
+  } else if (view === 'friday') {
+    if (fridayActual === null) return [];
+    return Object.entries(fridayPredictions).map(([name, pred]) => ({
+      name,
+      prediction: pred,
+      deviation: Math.abs(pred - fridayActual)
+    }));
+  } else {
+    // combined - only people who predicted both
+    if (fridayActual === null) return [];
+    const target = tuesdayActual + fridayActual;
+    const names = Object.keys(tuesdayPredictions).filter(n => n in fridayPredictions);
+    return names.map(name => {
+      const cumPred = tuesdayPredictions[name] + fridayPredictions[name];
+      return {
+        name,
+        prediction: cumPred,
+        deviation: Math.abs(cumPred - target)
+      };
+    });
+  }
+}
+
+function calcPoints(entries) {
+  if (currentScoring === 'position') {
+    return entries.map((e, i) => ({
+      ...e,
+      points: i < positionPoints.length ? positionPoints[i] : 1
+    }));
+  } else {
+    const maxDev = Math.max(...entries.map(e => e.deviation));
+    if (maxDev === 0) return entries.map(e => ({ ...e, points: 10 }));
+    return entries.map(e => ({
+      ...e,
+      points: Math.round(10 * (1 - e.deviation / maxDev) * 10) / 10
+    }));
+  }
+}
+
+function getRankBadge(rank) {
+  if (rank === 1) return '<span class="inline-flex items-center justify-center w-8 h-8 rounded-full podium-load-1 text-white font-bold text-sm glow-gold">1</span>';
+  if (rank === 2) return '<span class="inline-flex items-center justify-center w-8 h-8 rounded-full podium-load-2 text-white font-bold text-sm">2</span>';
+  if (rank === 3) return '<span class="inline-flex items-center justify-center w-8 h-8 rounded-full podium-load-3 text-white font-bold text-sm">3</span>';
+  return `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-blue-300 font-semibold text-sm">${rank}</span>`;
+}
+
+function getTarget() {
+  if (currentView === 'tuesday') return tuesdayActual;
+  if (currentView === 'friday') return fridayActual;
+  return fridayActual !== null ? tuesdayActual + fridayActual : null;
+}
+
+function render() {
+  // Update actual values display
+  document.getElementById('fri-actual').textContent = fridayActual !== null ? fridayActual.toFixed(2) : 'TBD';
+  document.getElementById('combined-target').textContent = fridayActual !== null ? (tuesdayActual + fridayActual).toFixed(2) : '—';
+
+  let entries = getEntries(currentView);
+
+  if (entries.length === 0 && (currentView === 'friday' || currentView === 'combined')) {
+    document.getElementById('leaderboard-body').innerHTML =
+      '<tr><td colspan="5" class="py-10 text-center text-blue-400/50 text-lg">Friday\'s answer not yet available</td></tr>';
+    return;
+  }
+
+  // Sort by deviation ascending (closest first)
+  entries.sort((a, b) => a.deviation - b.deviation);
+  entries = calcPoints(entries);
+
+  const target = getTarget();
+  const colPredLabel = currentView === 'combined' ? 'Cumulative Pred' : 'Prediction';
+  document.getElementById('col-pred').textContent = colPredLabel;
+
+  const tbody = document.getElementById('leaderboard-body');
+  tbody.innerHTML = '';
+
+  entries.forEach((entry, i) => {
+    const rank = i + 1;
+    const rowClass = rank <= 3 ? 'bg-fifa-accent/5' : '';
+    const devColor = entry.deviation === 0 ? 'text-emerald-400' : entry.deviation < 0.3 ? 'text-green-400' : entry.deviation < 0.5 ? 'text-yellow-400' : 'text-red-400';
+
+    const tr = document.createElement('tr');
+    tr.className = `border-b border-blue-500/10 hover:bg-white/5 transition-colors animate-row ${rowClass}`;
+    tr.style.animationDelay = `${i * 0.03}s`;
+    tr.innerHTML = `
+      <td class="py-4 px-5">${getRankBadge(rank)}</td>
+      <td class="py-4 px-5 font-semibold ${rank === 1 ? 'text-yellow-300' : 'text-white'}">${entry.name} ${entry.deviation === 0 ? '🎯' : ''}</td>
+      <td class="py-4 px-5 text-right font-mono text-blue-300">${entry.prediction.toFixed(2)}</td>
+      <td class="py-4 px-5 text-right font-mono ${devColor}">${entry.deviation === 0 ? 'EXACT!' : entry.deviation.toFixed(2)}</td>
+      <td class="py-4 px-5 text-right font-bold text-fifa-accent">${entry.points}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function setView(view) {
+  currentView = view;
+  ['tuesday', 'friday', 'combined'].forEach(v => {
+    document.getElementById('btn-' + v).className =
+      `px-5 py-2 rounded-lg text-sm font-semibold transition-all ${v === view ? 'toggle-active' : 'toggle-inactive'}`;
+  });
+  render();
+}
+
+function setScoring(scoring) {
+  currentScoring = scoring;
+  ['position', 'weighted'].forEach(s => {
+    document.getElementById('btn-' + s).className =
+      `px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${s === scoring ? 'toggle-active' : 'toggle-inactive'}`;
+  });
+  render();
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
