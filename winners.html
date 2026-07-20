@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Winners | BluWave-ai WC 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fifa: { dark: '#0a1628', blue: '#0066cc', accent: '#00a3ff', light: '#e6f4ff', navy: '#0d2137' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        /* Confetti */
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: hidden; }
+        .confetti {
+            position: absolute;
+            top: -20px;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(1080deg) scale(0.3); opacity: 0; }
+        }
+
+        /* Fireworks */
+        .firework {
+            position: fixed;
+            pointer-events: none;
+            z-index: 101;
+        }
+        .firework-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: fireworkBurst 1.2s ease-out forwards;
+        }
+        @keyframes fireworkBurst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Flying soccer balls */
+        .soccer-ball {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99;
+            animation: floatBall linear infinite;
+        }
+        @keyframes floatBall {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            5% { opacity: 0.5; }
+            95% { opacity: 0.5; }
+            100% { transform: translateY(-100px) rotate(1080deg); opacity: 0; }
+        }
+
+        /* Trophy glow */
+        .trophy-glow {
+            animation: trophyPulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6));
+        }
+        @keyframes trophyPulse {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 60px rgba(251, 191, 36, 0.9)); transform: scale(1.1); }
+        }
+
+        /* Shimmer effect on grand prize */
+        .shimmer-gold {
+            background: linear-gradient(110deg, rgba(251,191,36,0) 0%, rgba(251,191,36,0.2) 40%, rgba(251,191,36,0.4) 50%, rgba(251,191,36,0.2) 60%, rgba(251,191,36,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmerGold 2s ease-in-out infinite;
+        }
+        @keyframes shimmerGold {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Floating crown */
+        .crown-float {
+            animation: crownBob 1.5s ease-in-out infinite;
+        }
+        @keyframes crownBob {
+            0%, 100% { transform: translateY(0) rotate(-8deg); }
+            50% { transform: translateY(-12px) rotate(8deg); }
+        }
+
+        /* Gradient border animation */
+        .gradient-border {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444, #fbbf24, #f59e0b);
+            background-size: 400% 400%;
+            animation: borderShift 3s ease infinite;
+            padding: 4px;
+            border-radius: 1.5rem;
+        }
+        @keyframes borderShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Champion name glow */
+        .champion-name {
+            animation: nameGlow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 20px rgba(251,191,36,0.5), 0 0 40px rgba(251,191,36,0.3), 0 0 80px rgba(251,191,36,0.2);
+        }
+        @keyframes nameGlow {
+            from { text-shadow: 0 0 20px rgba(251,191,36,0.5), 0 0 40px rgba(251,191,36,0.3); }
+            to { text-shadow: 0 0 30px rgba(251,191,36,0.8), 0 0 60px rgba(251,191,36,0.5), 0 0 100px rgba(251,191,36,0.3); }
+        }
+
+        /* Rotating star ring around 1st place */
+        .star-ring {
+            animation: starRotate 8s linear infinite;
+        }
+        @keyframes starRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pulse border for 1st place */
+        .pulse-border {
+            animation: pulseBorder 2s ease-in-out infinite;
+        }
+        @keyframes pulseBorder {
+            0%, 100% { box-shadow: 0 0 20px rgba(251,191,36,0.3), inset 0 0 20px rgba(251,191,36,0.05); }
+            50% { box-shadow: 0 0 40px rgba(251,191,36,0.6), 0 0 80px rgba(251,191,36,0.2), inset 0 0 30px rgba(251,191,36,0.1); }
+        }
+
+        /* Gold rain */
+        .gold-rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 98; }
+        .gold-particle {
+            position: absolute;
+            top: -10px;
+            color: gold;
+            animation: goldFall linear infinite;
+            opacity: 0.6;
+        }
+        @keyframes goldFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 0.6; }
+            100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-fifa-dark min-h-screen text-white">
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-container"></div>
+    <!-- Gold Rain -->
+    <div class="gold-rain" id="gold-rain"></div>
+    <!-- Fireworks Container -->
+    <div id="fireworks-container"></div>
+    <!-- Flying Soccer Balls -->
+    <div id="soccer-balls"></div>
+
+    <!-- Prize Banner -->
+    <div class="prize-banner border-b border-yellow-400/50 text-center py-3 px-4">
+        <div class="text-yellow-200 font-bold text-sm md:text-base animate-pulse">
+            🏆✨ CONGRATULATIONS TO ALL WINNERS! ✨🏆
+        </div>
+        <div class="text-yellow-400/80 text-xs mt-1">FIFA World Cup 2026 Prediction Pool — It's a wrap!</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-black/30 backdrop-blur-md border-b border-fifa-blue/30 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="BW_assets/BluWave-ai_Logo_-_White_Text,_Blue_Background-qde51.webp" alt="BluWave-ai" class="h-8 rounded">
+                <span class="font-bold text-lg text-fifa-accent">WC 2026</span>
+            </a>
+            <div class="flex gap-4 text-sm">
+                <a href="index.html" class="hover:text-fifa-accent transition">Home</a>
+                <a href="predictions.html" class="hover:text-fifa-accent transition">Predictions</a>
+                <a href="leaderboard.html" class="hover:text-fifa-accent transition">Leaderboard</a>
+                <a href="all-predictions.html" class="hover:text-fifa-accent transition">All Picks</a>
+                <a href="load-prediction.html" class="hover:text-fifa-accent transition">Load Prediction</a>
+                <a href="winners.html" class="text-fifa-accent font-semibold">Winners</a>
+                <a href="rules.html" class="hover:text-fifa-accent transition">Rules</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-12 relative">
+
+        <!-- Hero -->
+        <div class="text-center mb-12 relative">
+            <div class="text-8xl trophy-glow mb-4">🏆</div>
+            <h1 class="text-6xl md:text-7xl font-black mb-4 bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                CHAMPIONS
+            </h1>
+            <p class="text-xl text-blue-200/70">BluWave-ai FIFA World Cup 2026 Prediction Pool</p>
+        </div>
+
+        <!-- ============ 1ST PLACE - CRAIG - MASSIVE ============ -->
+        <div class="gradient-border mb-6">
+            <div class="bg-fifa-dark rounded-[20px] p-10 relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 rounded-[20px]"></div>
+                <div class="relative z-10 text-center">
+                    <div class="flex items-center justify-center gap-4 mb-6">
+                        <span class="crown-float text-5xl">👑</span>
+                        <h2 class="text-4xl md:text-5xl font-black text-yellow-300">GRAND CHAMPION</h2>
+                        <span class="crown-float text-5xl" style="animation-delay: 0.7s;">👑</span>
+                    </div>
+
+                    <div class="relative inline-block mb-6">
+                        <div class="star-ring absolute -inset-6 text-yellow-300/30 text-2xl flex items-center justify-center">
+                            <span class="absolute" style="top: 0; left: 50%; transform: translateX(-50%);">⭐</span>
+                            <span class="absolute" style="bottom: 0; left: 50%; transform: translateX(-50%);">⭐</span>
+                            <span class="absolute" style="left: 0; top: 50%; transform: translateY(-50%);">⭐</span>
+                            <span class="absolute" style="right: 0; top: 50%; transform: translateY(-50%);">⭐</span>
+                        </div>
+                        <div class="text-8xl mb-2">🥇</div>
+                    </div>
+
+                    <div class="text-sm text-yellow-300/70 uppercase tracking-[0.3em] font-semibold mb-2">🏆 1st Place — Final 🏆</div>
+                    <div class="text-7xl md:text-8xl font-black champion-name text-yellow-300 mb-6">Craig</div>
+
+                    <div class="pulse-border bg-gradient-to-br from-yellow-500/20 to-yellow-600/5 border-2 border-yellow-500/40 rounded-2xl p-6 max-w-md mx-auto">
+                        <div class="space-y-3 text-base">
+                            <div class="bg-white/10 rounded-xl py-3 px-4 flex items-center justify-center gap-2">
+                                <span class="text-2xl">🏨</span>
+                                <span>2 Nights at a Hotel</span>
+                                <span class="text-yellow-300 font-bold">(up to $500)</span>
+                            </div>
+                            <div class="bg-white/10 rounded-xl py-3 px-4 flex items-center justify-center gap-2">
+                                <span class="text-2xl">🌴</span>
+                                <span>A Paid Day Off</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ 2ND PLACE - SHAN ============ -->
+        <div class="mb-10">
+            <div class="bg-gradient-to-br from-blue-400/15 to-blue-500/5 border-2 border-blue-400/30 rounded-2xl p-8 text-center relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 opacity-20"></div>
+                <div class="relative z-10">
+                    <div class="text-6xl mb-3">🥈</div>
+                    <div class="text-sm text-blue-300/70 uppercase tracking-[0.2em] font-semibold mb-2">2nd Place — Final</div>
+                    <div class="text-5xl font-black text-blue-300 mb-4">Shan</div>
+                    <div class="max-w-sm mx-auto space-y-2 text-sm">
+                        <div class="bg-white/5 rounded-lg py-2 px-3 flex items-center justify-center gap-2">
+                            <span class="text-xl">🏨</span> 1 Night at a Hotel <span class="text-yellow-300 font-bold">(up to $250)</span>
+                        </div>
+                        <div class="bg-white/5 rounded-lg py-2 px-3 flex items-center justify-center gap-2">
+                            <span class="text-xl">🌴</span> A Paid Day Off
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SEMI-FINALS ============ -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-purple-500/10 to-purple-600/5 border border-purple-400/30 rounded-xl p-6 relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 opacity-30"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-purple-500/20 rounded-lg px-4 py-2 text-center">
+                            <div class="text-xs text-purple-300">Round 4</div>
+                            <div class="font-bold text-purple-200">Semi-Finals</div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg font-bold text-white">1 Night at a Hotel</div>
+                            <div class="text-purple-300 text-sm">up to $250</div>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-5 text-center border border-purple-500/20">
+                        <div class="text-3xl mb-2">🏨</div>
+                        <div class="text-sm text-purple-300 uppercase tracking-widest mb-1">Winner</div>
+                        <div class="text-3xl font-black text-purple-300">Danish</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ QUARTER-FINALS ============ -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border border-emerald-400/30 rounded-xl p-6 relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 opacity-20"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-emerald-500/20 rounded-lg px-4 py-2 text-center">
+                            <div class="text-xs text-emerald-300">Round 3</div>
+                            <div class="font-bold text-emerald-200">Quarter-Finals</div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg font-bold text-white">Dinner for 2</div>
+                            <div class="text-emerald-300 text-sm">up to $120 each</div>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white/5 rounded-lg p-5 text-center border border-emerald-500/20">
+                            <div class="text-3xl mb-2">🍽️</div>
+                            <div class="text-sm text-emerald-300 uppercase tracking-widest mb-1">Winner</div>
+                            <div class="text-2xl font-black text-emerald-300">Saurabh</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-5 text-center border border-emerald-500/20">
+                            <div class="text-3xl mb-2">🍽️</div>
+                            <div class="text-sm text-emerald-300 uppercase tracking-widest mb-1">Winner</div>
+                            <div class="text-2xl font-black text-emerald-300">Hubert</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ ROUND OF 16 ============ -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-cyan-500/10 to-cyan-600/5 border border-cyan-400/30 rounded-xl p-6 relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 opacity-20"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-cyan-500/20 rounded-lg px-4 py-2 text-center">
+                            <div class="text-xs text-cyan-300">Round 2</div>
+                            <div class="font-bold text-cyan-200">Round of 16</div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg font-bold text-white">Wellness Expense Top-Up</div>
+                            <div class="text-cyan-300 text-sm">$100 each</div>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white/5 rounded-lg p-5 text-center border border-cyan-500/20">
+                            <div class="text-3xl mb-2">🏋️</div>
+                            <div class="text-sm text-cyan-300 uppercase tracking-widest mb-1">Winner</div>
+                            <div class="text-2xl font-black text-cyan-300">James</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-5 text-center border border-cyan-500/20">
+                            <div class="text-3xl mb-2">🏋️</div>
+                            <div class="text-sm text-cyan-300 uppercase tracking-widest mb-1">Winner</div>
+                            <div class="text-2xl font-black text-cyan-300">Yann T</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ ROUND OF 32 ============ -->
+        <div class="mb-12">
+            <div class="bg-gradient-to-r from-rose-500/10 to-rose-600/5 border border-rose-400/30 rounded-xl p-6 relative overflow-hidden">
+                <div class="shimmer-gold absolute inset-0 opacity-20"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-rose-500/20 rounded-lg px-4 py-2 text-center">
+                            <div class="text-xs text-rose-300">Round 1</div>
+                            <div class="font-bold text-rose-200">Round of 32</div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg font-bold text-white">Premium Movie Night</div>
+                            <div class="text-rose-300 text-sm">Cineplex VIP Experience — up to $80</div>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-5 text-center border border-rose-500/20">
+                        <div class="text-3xl mb-2">🎬</div>
+                        <div class="text-sm text-rose-300 uppercase tracking-widest mb-1">Winner</div>
+                        <div class="text-3xl font-black text-rose-300">Golara</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thank You -->
+        <div class="text-center">
+            <div class="text-5xl mb-4">⚽ 🎉 🎊 🎉 ⚽</div>
+            <h2 class="text-3xl font-bold text-blue-200 mb-2">Thanks for Playing!</h2>
+            <p class="text-blue-300/60 max-w-lg mx-auto text-lg">What an incredible tournament! Congratulations to all the winners and thanks to everyone who participated in the BluWave-ai World Cup 2026 Prediction Pool.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-blue-400/50 text-sm py-8">
+        BluWave-ai World Cup 2026 Prediction Pool ⚽🏆
+    </footer>
+
+    <script>
+        // ===== CONFETTI (MASSIVE) =====
+        const confettiContainer = document.getElementById('confetti-container');
+        const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#ffffff', '#ff6b6b', '#ffd93d', '#6bcb77'];
+        const shapes = ['■', '●', '▲', '★', '◆', '🎊', '🎉', '✨'];
+
+        function createConfetti() {
+            const el = document.createElement('div');
+            el.className = 'confetti';
+            el.style.left = Math.random() * 100 + '%';
+            el.style.color = colors[Math.floor(Math.random() * colors.length)];
+            el.style.fontSize = (Math.random() * 16 + 8) + 'px';
+            el.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            el.style.animationDelay = Math.random() * 0.3 + 's';
+            el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+            confettiContainer.appendChild(el);
+            setTimeout(() => el.remove(), 5500);
+        }
+
+        // MASSIVE burst on load
+        for (let i = 0; i < 200; i++) {
+            setTimeout(createConfetti, i * 15);
+        }
+        // Heavy continuous confetti
+        setInterval(() => {
+            for (let i = 0; i < 3; i++) createConfetti();
+        }, 100);
+
+        // ===== GOLD RAIN =====
+        const goldRain = document.getElementById('gold-rain');
+        function createGoldParticle() {
+            const p = document.createElement('div');
+            p.className = 'gold-particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (Math.random() * 4 + 3) + 's';
+            p.style.fontSize = (Math.random() * 10 + 8) + 'px';
+            p.textContent = ['✦', '✧', '⬥', '•'][Math.floor(Math.random() * 4)];
+            goldRain.appendChild(p);
+            setTimeout(() => p.remove(), 7000);
+        }
+        setInterval(createGoldParticle, 200);
+
+        // ===== FIREWORKS =====
+        const fwContainer = document.getElementById('fireworks-container');
+        function createFirework() {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight * 0.5);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const fw = document.createElement('div');
+            fw.className = 'firework';
+            fw.style.left = x + 'px';
+            fw.style.top = y + 'px';
+
+            const numParticles = 35 + Math.floor(Math.random() * 20);
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                particle.style.backgroundColor = color;
+                const angle = (Math.PI * 2 / numParticles) * i;
+                const distance = 80 + Math.random() * 150;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                particle.style.animation = `fireworkBurst 1.2s ease-out forwards`;
+                particle.style.transform = `translate(${tx}px, ${ty}px)`;
+                particle.style.width = (Math.random() * 6 + 3) + 'px';
+                particle.style.height = particle.style.width;
+                fw.appendChild(particle);
+            }
+
+            fwContainer.appendChild(fw);
+            setTimeout(() => fw.remove(), 1500);
+        }
+
+        // Fireworks burst on load
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createFirework, i * 300);
+        }
+        // Continuous fireworks
+        setInterval(createFirework, 800);
+
+        // ===== FLYING SOCCER BALLS =====
+        const ballContainer = document.getElementById('soccer-balls');
+        function createBall() {
+            const ball = document.createElement('div');
+            ball.className = 'soccer-ball';
+            ball.textContent = '⚽';
+            ball.style.left = Math.random() * 100 + '%';
+            ball.style.animationDuration = (Math.random() * 5 + 6) + 's';
+            ball.style.fontSize = (Math.random() * 24 + 24) + 'px';
+            ballContainer.appendChild(ball);
+            setTimeout(() => ball.remove(), 12000);
+        }
+
+        for (let i = 0; i < 8; i++) {
+            setTimeout(createBall, i * 800);
+        }
+        setInterval(createBall, 2000);
+    </script>
+</body>
+</html>
